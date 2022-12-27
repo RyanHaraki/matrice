@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { useRouter } from "next/router";
 import UploadWidget from "../../components/UploadWidget";
+import { getUser } from "../../utils/db";
 
-const Create = () => {
+const Create = ({ id }) => {
+  const [user, setUser] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -11,6 +13,28 @@ const Create = () => {
   const [image, setImage] = useState(null);
 
   const router = useRouter();
+
+  useEffect(() => {
+    // retrieve product information from database
+    let user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      user = getUser(user.uid)
+        .then((user) => {
+          setUser(user);
+          console.log(user);
+          const product = user.products.filter((p) => (p.id = id));
+          console.log(product);
+
+          setName(product.name);
+          setDescription(product.description);
+          setPrice(product.price || "0");
+          setUrl(product.url);
+        })
+        .catch((err) => console.error(err));
+    } else {
+      router.push("/");
+    }
+  }, []);
 
   return (
     <div className="grid grid-cols-5 gap-4 h-screen">
@@ -111,6 +135,7 @@ const Create = () => {
                 placeholder="productName"
                 id="name"
                 type="text"
+                value={url}
               />
             </div>
           </div>
@@ -164,3 +189,15 @@ const Create = () => {
 };
 
 export default Create;
+
+export async function getServerSideProps(context) {
+  // get the id of the current item
+  const { id } = context.query;
+
+  const product = "hi";
+  return {
+    props: {
+      id: id,
+    }, // will be passed to the page component as props
+  };
+}

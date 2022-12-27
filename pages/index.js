@@ -41,6 +41,7 @@ export default function Home() {
       .then((result) => {
         const user = result.user;
         localStorage.setItem("user", JSON.stringify(user));
+        createNewUser(user.uid, user.displayName, user.email, 1);
         router.push("/dashboard");
       })
       .catch((error) => {
@@ -60,8 +61,9 @@ export default function Home() {
         localStorage.setItem(
           "user",
           JSON.stringify({
-            displayName: user.name,
-            email: user.email,
+            uid: user.uid,
+            displayName: name,
+            email: email,
           })
         );
         createNewUser(user.uid, user.name, user.email, 1);
@@ -92,12 +94,13 @@ export default function Home() {
         localStorage.setItem(
           "user",
           JSON.stringify({
+            uid: user.uid,
             displayName: user.name,
             email: user.email,
           })
         );
-        // TODO: add the user to the database here
-
+        // add the user to the database
+        createNewUser(user.uid, name, email, 1);
         // push to the dashboard
         router.push("/dashboard");
       })

@@ -9,19 +9,19 @@ function useOutsideAlerter() {
   const [visible, setVisible] = useState(false);
   const ref = useRef(null);
 
-  const handleHideDropdown = (event) => {
-    if (event.key === "Escape") {
-      setVisible(false);
-    }
-  };
-
-  function handleClickOutside(e) {
-    if (ref.current && !ref.current.contains(e.target)) {
-      setVisible(false);
-    }
-  }
-
   useEffect(() => {
+    const handleHideDropdown = (event) => {
+      if (event.key === "Escape") {
+        setVisible(false);
+      }
+    };
+
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setVisible(false);
+      }
+    };
+
     document.addEventListener("keydown", handleHideDropdown, true);
     document.addEventListener("mousedown", handleClickOutside, true);
 
@@ -29,7 +29,7 @@ function useOutsideAlerter() {
       document.removeEventListener("keydown", handleHideDropdown, true);
       document.removeEventListener("mousedown", handleClickOutside, true);
     };
-  });
+  }, []);
 
   return { visible, ref, setVisible };
 }
