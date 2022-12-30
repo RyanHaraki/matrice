@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { FaHome, FaPlus, FaChartPie, FaBriefcase } from "react-icons/fa";
-import { HiDotsHorizontal } from "react-icons/hi";
+import {
+  FaHome,
+  FaPlus,
+  FaChartPie,
+  FaBriefcase,
+  FaTrash,
+  FaLink,
+} from "react-icons/fa";
 import { useRouter } from "next/router";
-import { getUser, updateUser } from "../../utils/db";
+import { getUser, updateUser, deleteProduct } from "../../utils/db";
 import { arrayUnion } from "firebase/firestore";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
-  const [productId, setProductId] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -16,15 +21,39 @@ const Dashboard = () => {
       user = getUser(user.uid)
         .then((user) => {
           setUser(user);
-          console.log("1", user);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => console.error("ERROR FETCHING USER: ", err));
     } else {
       router.push("/");
     }
-
-    console.log("2", user);
   }, []);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
+  const removeProduct = (id) => {
+    const product = user.products.filter((p) => p.id === id)[0];
+
+    const deletedProduct = {
+      id: id,
+      name: product.name,
+      description: product.description,
+      price: product.price || "0",
+      url: product.url || "",
+      image: product.image || "",
+      file: "",
+    };
+
+    // Delete the product from the database
+    deleteProduct(user.uid, deletedProduct);
+
+    // Remove the product from the state
+    setUser({
+      ...user,
+      products: user.products.filter((p) => p.id !== id),
+    });
+  };
 
   const addProduct = () => {
     const newProduct = {
@@ -37,11 +66,12 @@ const Dashboard = () => {
       file: "",
     };
 
-    setProductId(id);
-
     updateUser(user.uid, {
       products: arrayUnion(newProduct),
     });
+
+    console.log(`/dashboard/create?id=${newProduct.id}`);
+    router.push(`/dashboard/create?id=${newProduct.id}`);
   };
 
   return (
@@ -67,21 +97,45 @@ const Dashboard = () => {
         <h1 className="text-3xl font-bold mb-12">Your Products</h1>
         {/* Map over all products */}
         {user?.products.map((product) => (
-          <a href={`/dashboard/create?id=${product.id}`}>
-            <button className="flex items-center w-1/2  hover:bg-gray-50 rounded-md cursor-pointer p-2">
-              <FaBriefcase className="mr-2" />
-              {product.name || "Unnamed Product"}
-            </button>
-          </a>
-        ))}
-        <a href={`/dashboard/create?id=${productId}`}>
-          <button
-            onClick={addProduct}
-            className="flex items-center w-1/2 text-gray-400 hover:bg-gray-50 rounded-md cursor-pointer p-2"
+          <div
+            key={product.id}
+            className="flex items-center justify-between w-1/2  hover:bg-gray-50 rounded-md cursor-pointer p-2"
           >
+            <a
+              href={`/dashboard/create?id=${product.id}`}
+              className="w-full felx"
+            >
+              <button className="flex items-center justify-between w-1/2  hover:bg-gray-50 rounded-md cursor-pointer">
+                <div className="flex items-center">
+                  <FaBriefcase className="mr-2" />
+                  {product.name || "Unnamed Product"}
+                </div>
+              </button>
+            </a>
+            <div className="flex space-x-2">
+              <FaLink
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `https://usematrice.co/product/${user.displayName.replace(
+                      " ",
+                      "."
+                    )}?id=${product.id}`
+                  );
+                }}
+                className="rounded-md hover:bg-gray-200 h-full p-0.5"
+              />
+              <FaTrash
+                onClick={() => removeProduct(product.id)}
+                className="rounded-md hover:bg-gray-200 h-full p-0.5"
+              />
+            </div>
+          </div>
+        ))}
+        <p onClick={addProduct}>
+          <button className="flex items-center w-1/2 text-gray-400 hover:bg-gray-50 rounded-md cursor-pointer p-2">
             <FaPlus className="mr-2" /> Add new Product
           </button>
-        </a>
+        </p>
       </div>
     </div>
   );

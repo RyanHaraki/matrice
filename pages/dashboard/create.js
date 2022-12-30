@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { useRouter } from "next/router";
 import UploadWidget from "../../components/UploadWidget";
-import { getUser } from "../../utils/db";
+import { getUser, updateUser } from "../../utils/db";
+import { deleteFile, saveFile } from "../../utils/storage";
+import { storage } from "../../utils/firebase";
 
+// TODO: get image from database nad set image to said image on page load
 const Create = ({ id }) => {
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
@@ -21,20 +24,62 @@ const Create = ({ id }) => {
       user = getUser(user.uid)
         .then((user) => {
           setUser(user);
-          console.log(user);
           const product = user.products.filter((p) => (p.id = id));
-          console.log(product);
 
-          setName(product.name);
-          setDescription(product.description);
-          setPrice(product.price || "0");
-          setUrl(product.url);
+          // update the state of the application with product information
+          setName(product[0].name);
+          setDescription(product[0].description);
+          setPrice(product[0].price || "0");
+          setUrl(product[0].url);
+          setImage(product[0].image);
         })
         .catch((err) => console.error(err));
     } else {
       router.push("/");
     }
   }, []);
+
+  // Update product in database
+  const updateProduct = () => {
+    // create a new prpduct
+    const updatedProduct = {
+      id: id,
+      name: name,
+      description: description,
+      price: price,
+      url: url || "",
+      image: image || "",
+      file: "",
+    };
+
+    // Push the array with the updated product to the database
+    let products = user.products;
+    const uid = user.uid;
+    updateUser(uid, {
+      products: products.map((p) => (p.id === id ? (p = updatedProduct) : p)),
+    });
+
+    alert(`Product: ${id} succesfully updated`);
+  };
+
+  const uploadImage = (img) => {
+    console.log(img);
+    console.log("name", img.name);
+
+    // Set image in state
+    setImage(img);
+
+    // Save image to storage and delete any existing image
+    saveFile("/images", img.name);
+    if (user.image == img.name) {
+      deleteFile(".images", img.name);
+    }
+
+    // Update user in database
+    updateUser(uid, {
+      image: img.name,
+    });
+  };
 
   return (
     <div className="grid grid-cols-5 gap-4 h-screen">
@@ -56,8 +101,10 @@ const Create = ({ id }) => {
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
               Name
             </label>
+
             <input
               onChange={(e) => setName(e.target.value)}
+              value={name}
               className="border p-1.5 border-gray-300 w-full rounded-md"
               placeholder="My Product"
               id="name"
@@ -72,10 +119,10 @@ const Create = ({ id }) => {
             </label>
             <textarea
               onChange={(e) => setDescription(e.target.value)}
+              value={description}
               className="border p-1.5 border-gray-300 w-full h-28 rounded-md"
               placeholder="My product does amazing things and will make your life easier"
               id="name"
-              type="text"
             />
           </div>
 
@@ -86,10 +133,7 @@ const Create = ({ id }) => {
             </label>
             <input
               type="file"
-              onChange={(event) => {
-                console.log(event.target.files[0]);
-                setImage(event.target.files[0]);
-              }}
+              onChange={(event) => uploadImage(event.target.files[0])}
             />
           </div>
 
@@ -112,6 +156,7 @@ const Create = ({ id }) => {
               </div>
               <input
                 onChange={(e) => setPrice(e.target.value)}
+                value={price}
                 className="border p-1.5 border-gray-300 w-full rounded-r-md"
                 placeholder="5"
                 id="name"
@@ -121,27 +166,28 @@ const Create = ({ id }) => {
           </div>
 
           {/* Form Group */}
+
           <div className="flex flex-col w-full">
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
               URL
             </label>
             <div className="flex items-center">
-              <div className="flex items-center justify-center py-1.5 px-3 rounded-l-md border-gray-300 border-l border-t border-b bg-gray-100">
-                matrice.com/
+              <div className="flex items-center justify-center py-1.5 px-3 rounded-l-md border-gray-300 border-l border-t border-b bg-gray-100 text-xs">
+                {`usematrice.co/${user?.displayName.replace(" ", ".")}/`}
               </div>
               <input
                 onChange={(e) => setUrl(e.target.value)}
+                value={url}
                 className="border p-1.5 border-gray-300 w-full rounded-r-md"
                 placeholder="productName"
                 id="name"
                 type="text"
-                value={url}
               />
             </div>
           </div>
           <button
             className="bg-black text-white rounded-md w-full p-2 hover:bg-gray-800"
-            type="submit"
+            onClick={updateProduct}
           >
             Save Product
           </button>
@@ -152,11 +198,14 @@ const Create = ({ id }) => {
 
       <div className="col-span-3 px-4 py-8">
         {image && (
-          <img
-            className="w-full h-64 rounded-md mb-4"
-            src={URL.createObjectURL(image)}
-            alt="Product Image"
-          />
+          <>
+            <img
+              className="w-full h-64 rounded-md mb-4 object-cover"
+              src={URL.createObjectURL(image)}
+              alt="Product Image"
+            />
+            <hr className="my-4" />
+          </>
         )}
         <h1 className="text-3xl font-bold mb-8">{name}</h1>
         <p className="my-6">{description}</p>
@@ -191,13 +240,12 @@ const Create = ({ id }) => {
 export default Create;
 
 export async function getServerSideProps(context) {
-  // get the id of the current item
+  // get the id of the current item before passing it into create component
   const { id } = context.query;
 
-  const product = "hi";
   return {
     props: {
       id: id,
-    }, // will be passed to the page component as props
+    },
   };
 }

@@ -61,7 +61,12 @@ const Header = () => {
 
   return (
     <div className="flex items-center justify-between p-4 border-b border-gray-300">
-      <h1 className={"font-bold text-lg"}>Matrice</h1>
+      <h1
+        className={"font-bold text-lg cursor-pointer"}
+        onClick={() => router.push("/")}
+      >
+        Matrice
+      </h1>
       <div ref={ref}>
         <button
           onClick={() => setVisible(!visible)}

@@ -35,17 +35,20 @@ export default function Home() {
   }, [errorMessage]);
 
   // create user with Google oauth
-  // TODO: add user in db
-  const loginWithGoogle = () => {
+  const loginWithGoogle = async () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
         localStorage.setItem("user", JSON.stringify(user));
+
+        // Add user to DB
         createNewUser(user.uid, user.displayName, user.email, 1);
+
         router.push("/dashboard");
       })
       .catch((error) => {
         alert("There was an error. Please try again.");
+
         console.error(error);
       });
   };
@@ -105,10 +108,9 @@ export default function Home() {
         router.push("/dashboard");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        const { code, message } = error;
 
-        if (errorCode == "auth/email-already-in-use") {
+        if (code == "auth/email-already-in-use") {
           alert(
             "AUTHENTICATION ERROR: Account already exists. If this is you, try logging in."
           );
