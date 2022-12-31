@@ -6,24 +6,34 @@ import {
   deleteObject,
 } from "firebase/storage";
 
-// @param path - can only be type "files" or "images"
+// @param path - can only be "files" or "images"
 const saveFile = (path, file) => {
   const storageRef = ref(storage, `${path}/${file}`);
 
   uploadBytes(storageRef, file).then((snapshot) => {
     console.log("Image succesfully uploaded.");
+    getDownloadURL(snapshot).then((url) => {
+      console.log(url);
+    });
   });
 };
 
-// @param path - can only be type "files" or "images"
+// @param path - can only be "files" or "images"
 const getFile = (path, file) => {
-  const pathReference = ref(storage, `${path}/${file}`);
+  let fileUrl = "";
+
+  const pathReference = ref(storage, `${path}/${file.name}`);
 
   getDownloadURL(storage, pathReference)
     .then((url) => {
-      return url;
+      fileUrl = url;
     })
-    .catch((error) => console.error(error));
+    .catch((error) => {
+      console.error(error);
+      return null;
+    });
+
+  return fileUrl;
 };
 
 // @param path - can only be type "files" or "images"

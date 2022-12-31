@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronLeft } from "react-icons/fa";
+import { FaChevronLeft, FaMagento } from "react-icons/fa";
 import { useRouter } from "next/router";
 import UploadWidget from "../../components/UploadWidget";
 import { getUser, updateUser } from "../../utils/db";
-import { deleteFile, saveFile } from "../../utils/storage";
+import { deleteFile, getFile, saveFile } from "../../utils/storage";
 import { storage } from "../../utils/firebase";
 
-// TODO: get image from database nad set image to said image on page load
 const Create = ({ id }) => {
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
@@ -25,13 +24,15 @@ const Create = ({ id }) => {
         .then((user) => {
           setUser(user);
           const product = user.products.filter((p) => (p.id = id));
+          const image = getFile("images", product[0].image);
 
           // update the state of the application with product information
           setName(product[0].name);
           setDescription(product[0].description);
           setPrice(product[0].price || "0");
           setUrl(product[0].url);
-          setImage(product[0].image);
+          setImage(image);
+          console.log(image);
         })
         .catch((err) => console.error(err));
     } else {
@@ -48,11 +49,19 @@ const Create = ({ id }) => {
       description: description,
       price: price,
       url: url || "",
-      image: image || "",
+      image: image.name || "",
       file: "",
     };
 
-    // Push the array with the updated product to the database
+    console.log(image);
+    console.log(updatedProduct.image);
+
+    if (image && user.image !== updatedProduct.image.name) {
+      deleteFile("images/", user.image);
+      saveFile("/images", updatedProduct.image.name);
+    }
+
+    // // Push the array with the updated product to the database
     let products = user.products;
     const uid = user.uid;
     updateUser(uid, {
@@ -60,25 +69,6 @@ const Create = ({ id }) => {
     });
 
     alert(`Product: ${id} succesfully updated`);
-  };
-
-  const uploadImage = (img) => {
-    console.log(img);
-    console.log("name", img.name);
-
-    // Set image in state
-    setImage(img);
-
-    // Save image to storage and delete any existing image
-    saveFile("/images", img.name);
-    if (user.image == img.name) {
-      deleteFile(".images", img.name);
-    }
-
-    // Update user in database
-    updateUser(uid, {
-      image: img.name,
-    });
   };
 
   return (
@@ -133,8 +123,10 @@ const Create = ({ id }) => {
             </label>
             <input
               type="file"
-              onChange={(event) => uploadImage(event.target.files[0])}
+              defaultValue={image}
+              onChange={(event) => setImage(event.target.files[0])}
             />
+            {image?.name || "NO IMAGE"}
           </div>
 
           {/* Form Group */}
@@ -169,21 +161,21 @@ const Create = ({ id }) => {
 
           <div className="flex flex-col w-full">
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
-              URL
+              Product URL
             </label>
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <div className="flex items-center justify-center py-1.5 px-3 rounded-l-md border-gray-300 border-l border-t border-b bg-gray-100 text-xs">
                 {`usematrice.co/${user?.displayName.replace(" ", ".")}/`}
-              </div>
-              <input
-                onChange={(e) => setUrl(e.target.value)}
-                value={url}
-                className="border p-1.5 border-gray-300 w-full rounded-r-md"
-                placeholder="productName"
-                id="name"
-                type="text"
-              />
-            </div>
+              </div> */}
+            <input
+              onChange={(e) => setUrl(e.target.value)}
+              value={url}
+              className="border p-1.5 border-gray-300 w-full rounded-md"
+              placeholder="productName"
+              id="name"
+              type="url"
+            />
+            {/* </div> */}
           </div>
           <button
             className="bg-black text-white rounded-md w-full p-2 hover:bg-gray-800"

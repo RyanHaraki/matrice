@@ -1,26 +1,17 @@
-import { useState, useEffect } from "react";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { app } from "../utils/firebase";
-import { useRouter } from "next/router";
-import { FaGoogle } from "react-icons/fa";
-import { createNewUser } from "../utils/db";
+import React from "react";
+import { Dialog } from "@headlessui/react";
+import { useEffect, useState } from "react";
+import { HiBars3 } from "react-icons/hi2";
 
-export default function Home() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [login, setLogin] = useState(false); // false for sign up, true for login
-  const [errorMessage, setErrorMessage] = useState("");
+const navigation = [
+  //   { name: "Product", href: "#" },
+  //   { name: "Features", href: "#" },
+  //   { name: "Marketplace", href: "#" },
+  //   { name: "Company", href: "#" },
+];
 
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-  const router = useRouter();
+const Home = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("user")) {
@@ -28,198 +19,213 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    if (errorMessage !== "") {
-      alert(errorMessage);
-    }
-  }, [errorMessage]);
-
-  // create user with Google oauth
-  const loginWithGoogle = async () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        localStorage.setItem("user", JSON.stringify(user));
-
-        // Add user to DB
-        createNewUser(user.uid, user.displayName, user.email, 1);
-
-        router.push("/dashboard");
-      })
-      .catch((error) => {
-        alert("There was an error. Please try again.");
-
-        console.error(error);
-      });
-  };
-
-  // Sign user in with email
-  const signIn = (e) => {
-    e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        // save the users session in localstorage
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            uid: user.uid,
-            displayName: name,
-            email: email,
-          })
-        );
-        createNewUser(user.uid, user.name, user.email, 1);
-        router.push("/dashboard");
-      })
-      .catch((error) => {
-        // Handle login errors
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        if (errorCode == "auth/wrong-password") {
-          alert("Incorrect password, please try again.");
-        } else if (errorCode == "auth/user-disabled") {
-          alert("Your account is disabled.");
-        }
-      });
-  };
-
-  // create user with email and password
-  // TODO: add user to db
-  const onSubmit = (e) => {
-    e.preventDefault();
-    // create a new user with email and password (firebase)
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        const user = userCredential.user;
-        // save the users session in localstorage
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            uid: user.uid,
-            displayName: user.name,
-            email: user.email,
-          })
-        );
-        // add the user to the database
-        createNewUser(user.uid, name, email, 1);
-        // push to the dashboard
-        router.push("/dashboard");
-      })
-      .catch((error) => {
-        const { code, message } = error;
-
-        if (code == "auth/email-already-in-use") {
-          alert(
-            "AUTHENTICATION ERROR: Account already exists. If this is you, try logging in."
-          );
-        }
-      });
-  };
-
-  const renderSignUp = () => {
-    return (
-      <>
-        <h2 className="font-bold text-2xl">Start Selling Today</h2>
-        <input
-          onChange={(e) => setName(e.target.value)}
-          className="border py-1.5 px-4 border-gray-300 w-full rounded-md"
-          type="text"
-          placeholder="Name"
-          required
-        />
-        <input
-          onChange={(e) => setEmail(e.target.value)}
-          className="border py-1.5 px-4 border-gray-300 w-full rounded-md"
-          type="email"
-          placeholder="Email"
-          required
-        />
-        <input
-          min={8}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border py-1.5 px-4 border-gray-300 w-full rounded-md"
-          type="password"
-          placeholder="Password"
-          required
-        />
-        <button
-          className="bg-black text-white rounded-md w-full p-2 hover:bg-gray-800"
-          type="submit"
-        >
-          Start Selling
-        </button>
-        <button
-          onClick={() => loginWithGoogle()}
-          className="bg-[#1A73E8] text-white rounded-md w-full py-2 px-4 flex items-center justify-center"
-        >
-          Login with Google <FaGoogle className="ml-2" />
-        </button>
-        <p
-          onClick={() => setLogin(true)}
-          className="text-sm text-gray-400 hover:underline cursor-pointer"
-        >
-          Have an account? Log in
-        </p>
-      </>
-    );
-  };
-
-  const renderLogin = () => {
-    return (
-      <>
-        <h2 className="font-bold text-2xl text-center">
-          Login to your Account
-        </h2>
-        <input
-          onChange={(e) => setEmail(e.target.value)}
-          className="border py-1.5 px-4 border-gray-300 w-full rounded-md"
-          type="email"
-          placeholder="Email"
-          required
-        />
-        <input
-          min={8}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border py-1.5 px-4 border-gray-300 w-full rounded-md"
-          type="password"
-          placeholder="Password"
-          required
-        />
-        <button
-          className="bg-black text-white rounded-md w-full p-2 hover:bg-gray-800"
-          type="submit"
-          onClick={(e) => signIn(e)}
-        >
-          Log in
-        </button>
-        <button
-          onClick={() => loginWithGoogle()}
-          className="bg-[#1A73E8] text-white rounded-md w-full py-2 px-4 flex items-center justify-center"
-        >
-          Login with Google <FaGoogle className="ml-2" />
-        </button>
-        <p
-          onClick={() => setLogin(false)}
-          className="text-sm text-gray-400 hover:underline cursor-pointer"
-        >
-          Don't have an account? Sign up
-        </p>
-      </>
-    );
-  };
-
   return (
-    <div>
-      <div className="h-screen w-full flex items-center justify-center p-12 md:p-0">
-        <form
-          onSubmit={(e) => onSubmit(e)}
-          className="flex flex-col items-center border-gray-300 border p-6 rounded-md space-y-4 md:w-1/3 w-full lg:w-1/4 shadow-md"
+    <div className="isolate bg-white">
+      <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]">
+        <svg
+          className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
+          viewBox="0 0 1155 678"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          {login ? renderLogin() : renderSignUp()}
-        </form>
+          <path
+            fill="url(#45de2b6b-92d5-4d68-a6a0-9b9b2abad533)"
+            fillOpacity=".3"
+            d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
+          />
+          <defs>
+            <linearGradient
+              id="45de2b6b-92d5-4d68-a6a0-9b9b2abad533"
+              x1="1155.49"
+              x2="-78.208"
+              y1=".177"
+              y2="474.645"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stopColor="#9089FC" />
+              <stop offset={1} stopColor="#FF80B5" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
+      <div className="px-6 pt-6 lg:px-8">
+        <div>
+          <nav
+            className="flex h-9 items-center justify-between"
+            aria-label="Global"
+          >
+            <div className="flex lg:min-w-0 lg:flex-1" aria-label="Global">
+              <a href="#" className="-m-1.5 p-1.5">
+                <span className="sr-only">Matrice</span>
+                <img
+                  className="h-8"
+                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                  alt=""
+                />
+              </a>
+            </div>
+            <div className="flex lg:hidden">
+              <button
+                type="button"
+                className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <span className="sr-only">Open main menu</span>
+                <HiBars3 className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-center lg:gap-x-12">
+              {navigation.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="font-semibold text-gray-900 hover:text-gray-900"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+            <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
+              <a
+                href="/auth"
+                className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-gray-900/10 hover:ring-gray-900/20"
+              >
+                Log in
+              </a>
+            </div>
+          </nav>
+          <Dialog as="div" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
+            <Dialog.Panel
+              focus="true"
+              className="fixed inset-0 z-10 overflow-y-auto bg-white px-6 py-6 lg:hidden"
+            >
+              <div className="flex h-9 items-center justify-between">
+                <div className="flex">
+                  <a href="#" className="-m-1.5 p-1.5">
+                    <span className="sr-only">Your Company</span>
+                    <img
+                      className="h-8"
+                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                      alt=""
+                    />
+                  </a>
+                </div>
+                <div className="flex">
+                  <button
+                    type="button"
+                    className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="sr-only">Close menu</span>
+                    <HiBars3 className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
+              <div className="mt-6 flow-root">
+                <div className="-my-6 divide-y divide-gray-500/10">
+                  <div className="space-y-2 py-6">
+                    {navigation.map((item) => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-400/10"
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                  </div>
+                  <div className="py-6">
+                    <a
+                      href="/auth"
+                      className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10"
+                    >
+                      Log in
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </Dialog.Panel>
+          </Dialog>
+        </div>
+      </div>
+      <main>
+        <div className="relative px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl pt-20 pb-32 sm:pt-48 sm:pb-40">
+            <div>
+              <div className="hidden sm:mb-8 sm:flex sm:justify-center">
+                <div className="relative overflow-hidden rounded-full py-1.5 px-4 text-sm leading-6 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+                  <span className="text-gray-600">
+                    Announcing our launch!{" "}
+                    <a href="#" className="font-semibold text-indigo-600">
+                      <span className="absolute inset-0" aria-hidden="true" />
+                      Read more <span aria-hidden="true">&rarr;</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight sm:text-center sm:text-6xl">
+                  Start selling your digital products and get paid instantly
+                </h1>
+                <p className="mt-6 text-lg leading-8 text-gray-600 sm:text-center">
+                  Matrice is the creator platform that helps you sell your
+                  digital products and services, all while providing lower fees
+                  and faster payouts enabling you to keep more of what you earn.
+                </p>
+                <div className="mt-8 flex gap-x-4 sm:justify-center">
+                  <a
+                    href="/auth"
+                    className="inline-block rounded-lg bg-indigo-600 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-indigo-600 hover:bg-indigo-700 hover:ring-indigo-700"
+                  >
+                    Get started
+                    <span className="text-indigo-200" aria-hidden="true">
+                      &rarr;
+                    </span>
+                  </a>
+                  {/* <a
+                    href="#"
+                    className="inline-block rounded-lg px-4 py-1.5 text-base font-semibold leading-7 text-gray-900 ring-1 ring-gray-900/10 hover:ring-gray-900/20"
+                  >
+                    Live demo
+                    <span className="text-gray-400" aria-hidden="true">
+                      &rarr;
+                    </span>
+                  </a> */}
+                </div>
+              </div>
+              <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+                <svg
+                  className="relative left-[calc(50%+3rem)] h-[21.1875rem] max-w-none -translate-x-1/2 sm:left-[calc(50%+36rem)] sm:h-[42.375rem]"
+                  viewBox="0 0 1155 678"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill="url(#ecb5b0c9-546c-4772-8c71-4d3f06d544bc)"
+                    fillOpacity=".3"
+                    d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="ecb5b0c9-546c-4772-8c71-4d3f06d544bc"
+                      x1="1155.49"
+                      x2="-78.208"
+                      y1=".177"
+                      y2="474.645"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop stopColor="#9089FC" />
+                      <stop offset={1} stopColor="#FF80B5" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
-}
+};
+
+export default Home;

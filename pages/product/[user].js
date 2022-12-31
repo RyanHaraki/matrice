@@ -1,7 +1,6 @@
-import React, { useEffect, useId, useState } from "react";
-import { getUser, getUserByDisplayName } from "../../utils/db";
+import React, { useEffect, useState } from "react";
+import { getUserByDisplayName } from "../../utils/db";
 import { useRouter } from "next/router";
-import { limit } from "firebase/firestore";
 
 const User = ({ id }) => {
   const [product, setProduct] = useState(null);
