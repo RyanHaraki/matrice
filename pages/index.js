@@ -31,16 +31,16 @@ const features = [
     icon: DevicePhoneMobileIcon,
   },
   {
-    name: "Web3 Ready (soon)",
-    description:
-      "Accept crypto payments or token-gate your page. Simply enter your contract or wallet address",
-    icon: GlobeAltIcon,
-  },
-  {
     name: "Save Time with our No-Code Page Builder",
     description:
       "Use our page builder and customizer to create a beautiful page for each of your products, and publish them to the web instantly..",
     icon: ScaleIcon,
+  },
+  {
+    name: "Web3 Ready (soon)",
+    description:
+      "Accept crypto payments or token-gate your page. Simply enter your contract or wallet address",
+    icon: GlobeAltIcon,
   },
 ];
 
@@ -94,11 +94,7 @@ const Home = () => {
             <div className="flex lg:min-w-0 lg:flex-1" aria-label="Global">
               <a href="#" className="-m-1.5 p-1.5">
                 <span className="sr-only">Matrice</span>
-                <img
-                  className="h-8"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                  alt=""
-                />
+                <img className="h-8" src="./logo.svg" alt="Logo" />
               </a>
             </div>
             <div className="flex lg:hidden">
@@ -192,7 +188,7 @@ const Home = () => {
               <div className="hidden sm:mb-8 sm:flex sm:justify-center">
                 <div className="relative overflow-hidden rounded-full py-1.5 px-4 text-sm leading-6 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
                   <span className="text-gray-600">
-                    Announcing our launch!{" "}
+                    Announcing Matrice.{" "}
                     <a href="#" className="font-semibold text-indigo-600">
                       <span className="absolute inset-0" aria-hidden="true" />
                       Read more <span aria-hidden="true">&rarr;</span>
@@ -215,7 +211,7 @@ const Home = () => {
                     href="/auth"
                     className="inline-block rounded-lg bg-indigo-600 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-indigo-600 hover:bg-indigo-700 hover:ring-indigo-700"
                   >
-                    Get started
+                    Start Selling for free{" "}
                     <span className="text-indigo-200" aria-hidden="true">
                       &rarr;
                     </span>
