@@ -2,6 +2,13 @@ import React from "react";
 import { Dialog } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { HiBars3 } from "react-icons/hi2";
+import { useRouter } from "next/router";
+import {
+  BoltIcon,
+  DevicePhoneMobileIcon,
+  GlobeAltIcon,
+  ScaleIcon,
+} from "@heroicons/react/24/outline";
 
 const navigation = [
   //   { name: "Product", href: "#" },
@@ -10,8 +17,37 @@ const navigation = [
   //   { name: "Company", href: "#" },
 ];
 
+const features = [
+  {
+    name: "Get Paid Instantly with Low Fees",
+    description:
+      "Connect your bank account via Stripe and get paid the amount you desever the second somebody buys your product.",
+    icon: BoltIcon,
+  },
+  {
+    name: "Share your Products Anywhere",
+    description:
+      "Showcase your product using a beautiful and customizable that can be shared on any platform.",
+    icon: DevicePhoneMobileIcon,
+  },
+  {
+    name: "Web3 Ready (soon)",
+    description:
+      "Accept crypto payments or token-gate your page. Simply enter your contract or wallet address",
+    icon: GlobeAltIcon,
+  },
+  {
+    name: "Save Time with our No-Code Page Builder",
+    description:
+      "Use our page builder and customizer to create a beautiful page for each of your products, and publish them to the web instantly..",
+    icon: ScaleIcon,
+  },
+];
+
 const Home = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     if (localStorage.getItem("user")) {
@@ -21,6 +57,7 @@ const Home = () => {
 
   return (
     <div className="isolate bg-white">
+      {/* HERO SECTION */}
       <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]">
         <svg
           className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
@@ -170,9 +207,10 @@ const Home = () => {
                 <p className="mt-6 text-lg leading-8 text-gray-600 sm:text-center">
                   Matrice is the creator platform that helps you sell your
                   digital products and services, all while providing lower fees
-                  and faster payouts enabling you to keep more of what you earn.
+                  and instant payouts enabling you to keep more of what you
+                  earn.
                 </p>
-                <div className="mt-8 flex gap-x-4 sm:justify-center">
+                <div className="mt-8 flex gap -x-4 sm:justify-center">
                   <a
                     href="/auth"
                     className="inline-block rounded-lg bg-indigo-600 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-indigo-600 hover:bg-indigo-700 hover:ring-indigo-700"
@@ -224,6 +262,76 @@ const Home = () => {
           </div>
         </div>
       </main>
+      {/* FEATURES */}
+      <div className="bg-white py-24 sm:py-32 lg:py-40 bg-opacity-0">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="sm:text-center">
+            <h2 className="text-lg font-semibold leading-8 text-indigo-600">
+              Features
+            </h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              A better, cheaper way to sell your digital products
+            </p>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600">
+              Whether you're a creator, artist, or entrepreneur, Matrice is the
+              best place for you to sell your digital products and services to
+              your audience.
+            </p>
+          </div>
+
+          <div className="mt-20 max-w-lg sm:mx-auto md:max-w-none">
+            <div className="grid grid-cols-1 gap-y-16 md:grid-cols-2 md:gap-x-12 md:gap-y-16">
+              {features.map((feature) => (
+                <div
+                  key={feature.name}
+                  className="relative flex flex-col gap-6 sm:flex-row md:flex-col lg:flex-row"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500 text-white sm:shrink-0">
+                    <feature.icon className="h-8 w-8" aria-hidden="true" />
+                  </div>
+                  <div className="sm:min-w-0 sm:flex-1">
+                    <p className="text-lg font-semibold leading-8 text-gray-900">
+                      {feature.name}
+                    </p>
+                    <p className="mt-2 text-base leading-7 text-gray-600">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* CTA */}
+      <div className="bg-gray-100">
+        <div className="mx-auto max-w-7xl py-12 px-4 sm:px-6 lg:flex lg:items-center lg:justify-between lg:py-16 lg:px-8">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            <span className="block">Ready to dive in?</span>
+            <span className="block text-indigo-600">
+              Sign up today for free.
+            </span>
+          </h2>
+          <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
+            <div className="inline-flex rounded-md shadow">
+              <a
+                href="/auth"
+                className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-5 py-3 text-base font-medium text-white hover:bg-indigo-700"
+              >
+                Get started
+              </a>
+            </div>
+            {/* <div className="ml-3 inline-flex rounded-md shadow">
+              <a
+                href="#"
+                className="inline-flex items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-base font-medium text-indigo-600 hover:bg-indigo-50"
+              >
+                Learn more
+              </a>
+            </div> */}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -163,10 +163,6 @@ const Create = ({ id }) => {
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
               Product URL
             </label>
-            {/* <div className="flex items-center">
-              <div className="flex items-center justify-center py-1.5 px-3 rounded-l-md border-gray-300 border-l border-t border-b bg-gray-100 text-xs">
-                {`usematrice.co/${user?.displayName.replace(" ", ".")}/`}
-              </div> */}
             <input
               onChange={(e) => setUrl(e.target.value)}
               value={url}
@@ -175,7 +171,6 @@ const Create = ({ id }) => {
               id="name"
               type="url"
             />
-            {/* </div> */}
           </div>
           <button
             className="bg-black text-white rounded-md w-full p-2 hover:bg-gray-800"
