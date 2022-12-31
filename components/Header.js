@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { FaChevronDown, FaLastfmSquare } from "react-icons/all";
+import { FaChevronDown } from "react-icons/all";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { auth } from "../utils/auth";
@@ -65,7 +65,7 @@ const Header = () => {
         className={"font-bold text-lg cursor-pointer"}
         onClick={() => router.push("/")}
       >
-        Matrice
+        <img src="./logo.svg" alt="Logo" className="max-h-6" />
       </h1>
       <div ref={ref}>
         <button

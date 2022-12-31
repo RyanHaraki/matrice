@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import Header from "../components/Header";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Wrapper from "../components/Wrapper";
 
 function MyApp({ Component, pageProps }) {
   const [user, setUser] = useState(null);
@@ -15,10 +16,12 @@ function MyApp({ Component, pageProps }) {
   }, [router.pathname]);
 
   return (
-    <div className={"h-screen"}>
-      {user && <Header />}
-      <Component {...pageProps} />
-    </div>
+    <Wrapper>
+      <div className={"h-screen"}>
+        {user && <Header />}
+        <Component {...pageProps} />
+      </div>
+    </Wrapper>
   );
 }
 
