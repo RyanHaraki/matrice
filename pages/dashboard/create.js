@@ -7,30 +7,24 @@ import { deleteFile, getFile, saveFile } from "../../utils/storage";
 
 const Create = ({ id }) => {
   const [user, setUser] = useState(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [url, setUrl] = useState("");
-  const [image, setImage] = useState(null);
+  const [product, setProduct] = useState(null);
 
   const router = useRouter();
 
+  // TODO: fix bug with this useEffect -> ID is correct but the product info is pulled from another product
+  // RECREATE: create a new product in dashboard -> multiple products are created with the same ID with differnet info (look at console.log)
+  // changes other product IDs to the new product ID... makes no sense
   useEffect(() => {
     // retrieve product information from database
     let user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       user = getUser(user.uid)
         .then((user) => {
-          setUser(user);
-          const product = user.products.filter((p) => (p.id = id));
-          const image = getFile("images", product[0].image);
+          console.log(user);
+          const product = user.products.filter((p) => (p.id = id))[0];
 
-          // update the state of the application with product information
-          setName(product[0].name);
-          setDescription(product[0].description);
-          setPrice(product[0].price || "0");
-          setUrl(product[0].url);
-          setImage(image);
+          setUser(user);
+          setProduct(product);
         })
         .catch((err) => console.error(err));
     } else {
@@ -38,35 +32,30 @@ const Create = ({ id }) => {
     }
   }, []);
 
-  // Update product in database
-  const updateProduct = async () => {
-    if (image) {
-      console.log(image);
-      deleteFile("images/", image);
-      const downloadUrl = saveFile("images/", image.name);
-      setImage(downloadUrl);
-      console.log(downloadUrl);
+  const saveProduct = async (e) => {
+    e.preventDefault();
+    console.log(product.image);
+    let downloadUrl;
+
+    // push image to storage
+    if (product.image) {
+      downloadUrl = await saveFile("images/", product.image);
     }
 
-    // create a new product
-    const updatedProduct = {
-      id: id,
-      name: name,
-      description: description,
-      price: price,
-      url: url || "",
-      image: url || "",
-      file: "",
-    };
-
-    // // Push the array with the updated product to the database
-    let products = user.products;
+    // update user in database with new image downloadURL
     const uid = user.uid;
     updateUser(uid, {
-      products: products.map((p) => (p.id === id ? (p = updatedProduct) : p)),
+      products: [
+        ...user.products,
+        {
+          ...product,
+          image: downloadUrl !== undefined ? downloadUrl : product.image,
+        },
+      ],
     });
 
-    alert(`Product: ${id} succesfully updated`);
+    // alert user of success
+    alert(`Product: ${id} succesfully updated `);
   };
 
   return (
@@ -83,7 +72,10 @@ const Create = ({ id }) => {
         </div>
 
         {/* Inputs */}
-        <div className="w-full space-y-6 border-b">
+        <form
+          className="w-full space-y-6 border-b"
+          onSubmit={(e) => saveProduct(e)}
+        >
           {/* Form Group */}
           <div className="flex flex-col w-full">
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
@@ -91,8 +83,8 @@ const Create = ({ id }) => {
             </label>
 
             <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              onChange={(e) => setProduct({ ...product, name: e.target.value })}
+              value={product?.name}
               className="border p-1.5 border-gray-300 w-full rounded-md"
               placeholder="My Product"
               id="name"
@@ -106,8 +98,10 @@ const Create = ({ id }) => {
               Description
             </label>
             <textarea
-              onChange={(e) => setDescription(e.target.value)}
-              value={description}
+              onChange={(e) =>
+                setProduct({ ...product, description: e.target.value })
+              }
+              value={product?.description}
               className="border p-1.5 border-gray-300 w-full h-28 rounded-md"
               placeholder="My product does amazing things and will make your life easier"
               id="name"
@@ -121,10 +115,11 @@ const Create = ({ id }) => {
             </label>
             <input
               type="file"
-              defaultValue={image}
-              onChange={(event) => setImage(event.target.files[0])}
+              defaultValue={product?.image}
+              onChange={(event) =>
+                setProduct({ ...product, image: event.target.files[0] })
+              }
             />
-            {image?.name || "NO IMAGE"}
           </div>
 
           {/* Form Group */}
@@ -145,8 +140,10 @@ const Create = ({ id }) => {
                 $
               </div>
               <input
-                onChange={(e) => setPrice(e.target.value)}
-                value={price}
+                onChange={(e) =>
+                  setProduct({ ...product, price: e.target.value })
+                }
+                value={product?.price}
                 className="border p-1.5 border-gray-300 w-full rounded-r-md"
                 placeholder="5"
                 id="name"
@@ -162,8 +159,8 @@ const Create = ({ id }) => {
               Product URL
             </label>
             <input
-              onChange={(e) => setUrl(e.target.value)}
-              value={url}
+              onChange={(e) => setProduct({ ...product, url: e.target.value })}
+              value={product?.url}
               className="border p-1.5 border-gray-300 w-full rounded-md"
               placeholder="https://linktoproduct.com"
               id="name"
@@ -172,28 +169,28 @@ const Create = ({ id }) => {
           </div>
           <button
             className="bg-black text-white rounded-md w-full p-2 hover:bg-gray-800"
-            onClick={updateProduct}
+            type="submit"
           >
             Save Product
           </button>
-        </div>
+        </form>
       </div>
 
       {/* Product Page Template */}
 
       <div className="col-span-3 px-4 py-8">
-        {image && (
+        {product?.image && (
           <>
             <img
               className="w-full h-64 rounded-md mb-4 object-cover"
-              src={URL.createObjectURL(image) || image}
+              src={product?.image}
               alt="Product Image"
             />
             <hr className="my-4" />
           </>
         )}
-        <h1 className="text-3xl font-bold mb-8">{name}</h1>
-        <p className="my-6">{description}</p>
+        <h1 className="text-3xl font-bold mb-8">{product?.name}</h1>
+        <p className="my-6">{product?.description}</p>
       </div>
 
       <div className="co-span-1 border-l border-gray-300 bg-gray-100 p-4">
@@ -202,7 +199,11 @@ const Create = ({ id }) => {
         <div className="flex items-center justify-between mt-2">
           <p className="font-bold">Total:</p>
           <p className="font-bold text-2xl">
-            {price.includes(".") ? "$" + price : "$" + price + ".00"}
+            {product?.price && product?.price !== "0"
+              ? product?.price.includes(".")
+                ? "$" + product?.price
+                : "$" + product?.price + ".00"
+              : "Free"}
           </p>
         </div>
         {/* Purchase (bottom) */}

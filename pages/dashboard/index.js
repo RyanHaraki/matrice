@@ -70,7 +70,6 @@ const Dashboard = () => {
       products: arrayUnion(newProduct),
     });
 
-    console.log(`/dashboard/create?id=${newProduct.id}`);
     router.push(`/dashboard/create?id=${newProduct.id}`);
   };
 

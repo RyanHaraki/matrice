@@ -80,16 +80,14 @@ const Header = () => {
               "absolute top-14 right-4 rounded-md border border-gray-300 bg-white overflow-hidden"
             }
           >
-            {user && (
-              <button
-                onClick={logUserOut}
-                className={
-                  "text-left text-sm hover:bg-blue-700 hover:text-white w-full px-4 py-2"
-                }
-              >
-                Log Out
-              </button>
-            )}
+            <button
+              onClick={() => router.replace("/dashboard")}
+              className={
+                "text-left text-sm hover:bg-blue-700 hover:text-white w-full px-4 py-2"
+              }
+            >
+              Dashboard
+            </button>
             <button
               onClick={() =>
                 router.replace(
@@ -102,6 +100,16 @@ const Header = () => {
             >
               Request Feature
             </button>
+            {user && (
+              <button
+                onClick={logUserOut}
+                className={
+                  "text-left text-sm hover:bg-blue-700 hover:text-white w-full px-4 py-2"
+                }
+              >
+                Log Out
+              </button>
+            )}
           </div>
         )}
       </div>
