@@ -10,7 +10,7 @@ const Wrapper = ({ children }) => {
           content="Matrice | Sell Your Digital Products"
           key="title"
         />
-        <meta property="og:type" content="website" />
+        <meta property="og:type" cont ent="website" />
         <meta
           name="description"
           content="Sell your digital products and get paid what you deserve with instant payouts and low fees."

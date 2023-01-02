@@ -39,15 +39,24 @@ export default function Auth() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        localStorage.setItem("user", JSON.stringify(user));
+        // If the user is a new user, add them to the database
+        if (user.metadata.createdAt == result.user.metadata.lastLoginAt) {
+          // Add user to DB and set them in localstorage
+          localStorage.setItem("user", JSON.stringify(user));
+          createNewUser(user.uid, user.displayName, user.email, 1);
+        } else {
+          // If the user is not new, just set them in localstorage
+          const user = result.user;
+          localStorage.setItem("user", JSON.stringify(user));
+        }
 
-        // Add user to DB
-        createNewUser(user.uid, user.displayName, user.email, 1);
-
-        router.push("/dashboard");
+        // Push user to the dashboard
+        router.push("dashboard");
       })
       .catch((error) => {
-        alert("There was an error. Please try again.");
+        if (error.code == "auth/account-exists-with-different-credential") {
+          console.log("Email already in use with different sign-in method.");
+        }
 
         console.error(error);
       });
@@ -69,7 +78,6 @@ export default function Auth() {
             email: email,
           })
         );
-        createNewUser(user.uid, user.name, user.email, 1);
         router.push("/dashboard");
       })
       .catch((error) => {

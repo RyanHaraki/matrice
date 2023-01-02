@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import UploadWidget from "../../components/UploadWidget";
 import { getUser, updateUser } from "../../utils/db";
 import { deleteFile, getFile, saveFile } from "../../utils/storage";
-import { storage } from "../../utils/firebase";
 
 const Create = ({ id }) => {
   const [user, setUser] = useState(null);
@@ -32,7 +31,6 @@ const Create = ({ id }) => {
           setPrice(product[0].price || "0");
           setUrl(product[0].url);
           setImage(image);
-          console.log(image);
         })
         .catch((err) => console.error(err));
     } else {
@@ -41,25 +39,25 @@ const Create = ({ id }) => {
   }, []);
 
   // Update product in database
-  const updateProduct = () => {
-    // create a new prpduct
+  const updateProduct = async () => {
+    if (image) {
+      console.log(image);
+      deleteFile("images/", image);
+      const downloadUrl = saveFile("images/", image.name);
+      setImage(downloadUrl);
+      console.log(downloadUrl);
+    }
+
+    // create a new product
     const updatedProduct = {
       id: id,
       name: name,
       description: description,
       price: price,
       url: url || "",
-      image: image.name || "",
+      image: url || "",
       file: "",
     };
-
-    console.log(image);
-    console.log(updatedProduct.image);
-
-    if (image && user.image !== updatedProduct.image.name) {
-      deleteFile("images/", user.image);
-      saveFile("/images", updatedProduct.image.name);
-    }
 
     // // Push the array with the updated product to the database
     let products = user.products;
@@ -167,7 +165,7 @@ const Create = ({ id }) => {
               onChange={(e) => setUrl(e.target.value)}
               value={url}
               className="border p-1.5 border-gray-300 w-full rounded-md"
-              placeholder="productName"
+              placeholder="https://linktoproduct.com"
               id="name"
               type="url"
             />
@@ -188,7 +186,7 @@ const Create = ({ id }) => {
           <>
             <img
               className="w-full h-64 rounded-md mb-4 object-cover"
-              src={URL.createObjectURL(image)}
+              src={URL.createObjectURL(image) || image}
               alt="Product Image"
             />
             <hr className="my-4" />

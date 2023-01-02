@@ -7,15 +7,13 @@ import {
 } from "firebase/storage";
 
 // @param path - can only be "files" or "images"
-const saveFile = (path, file) => {
-  const storageRef = ref(storage, `${path}/${file}`);
+const saveFile = async (path, file) => {
+  const storageRef = ref(storage, `${path}/${file.name}`);
 
-  uploadBytes(storageRef, file).then((snapshot) => {
-    console.log("Image succesfully uploaded.");
-    getDownloadURL(snapshot).then((url) => {
-      console.log(url);
-    });
-  });
+  const snapshot = await uploadBytes(storageRef, file);
+  const downloadUrl = await getDownloadURL(snapshot.ref);
+
+  return downloadUrl;
 };
 
 // @param path - can only be "files" or "images"
