@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Wrapper from "../components/Wrapper";
+import Script from "next/script";
 
 function MyApp({ Component, pageProps }) {
   const [user, setUser] = useState(null);
@@ -18,12 +19,27 @@ function MyApp({ Component, pageProps }) {
   }, [router.asPath]);
 
   return (
-    <Wrapper>
-      <div className={"h-screen"}>
-        {user && <Header />}
-        <Component {...pageProps} />
-      </div>
-    </Wrapper>
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=G-${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
+        `}
+      </Script>
+      <Wrapper>
+        <div className={"h-screen"}>
+          {user && <Header />}
+          <Component {...pageProps} />
+        </div>
+      </Wrapper>
+    </>
   );
 }
 
