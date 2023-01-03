@@ -51,7 +51,7 @@ export default function Auth() {
         }
 
         // Push user to the dashboard
-        router.push("dashboard");
+        router.push("/dashboard");
       })
       .catch((error) => {
         if (error.code == "auth/account-exists-with-different-credential") {
