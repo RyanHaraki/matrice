@@ -200,21 +200,21 @@ export default function Auth() {
         <div className="flex flex-col items-center border-gray-300 border p-6 rounded-md space-y-4 md:w-1/3 w-full lg:w-1/4 shadow-md">
           <form onSubmit={(e) => onSubmit(e)} className="space-y-4 text-center">
             {login ? renderLogin() : renderSignUp()}
-            <button
-              onClick={() => loginWithGoogle()}
-              className="bg-[#1A73E8] text-white rounded-md w-full py-2 px-4 flex items-center justify-center"
-            >
-              Login with Google <FaGoogle className="ml-2" />
-            </button>
-            <p
-              onClick={() => setLogin(!login)}
-              className="text-sm text-gray-400 hover:underline cursor-pointer"
-            >
-              {login
-                ? "Don't have an account? Sign up"
-                : "Have an account? Log in"}
-            </p>
           </form>
+          <button
+            onClick={() => loginWithGoogle()}
+            className="bg-[#1A73E8] text-white rounded-md w-full py-2 px-4 flex items-center justify-center"
+          >
+            Login with Google <FaGoogle className="ml-2" />
+          </button>
+          <p
+            onClick={() => setLogin(!login)}
+            className="text-sm text-gray-400 hover:underline cursor-pointer"
+          >
+            {login
+              ? "Don't have an account? Sign up"
+              : "Have an account? Log in"}
+          </p>
         </div>
       </div>
     </div>
