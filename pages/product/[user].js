@@ -16,8 +16,10 @@ const User = ({ id }) => {
     // retrieve product information from database
     let user = getUserByDisplayName(router.query.user.replace(".", " "))
       .then((user) => {
-        const product = user.products.filter((p) => p.id === productId);
-        setProduct(product[0]);
+        console.log(user);
+        const product = user.products.filter((p) => p.id === productId)[0];
+        console.log(product);
+        setProduct(product);
       })
       .catch((err) => console.error(err));
   }, [router.isReady]);
@@ -47,12 +49,12 @@ const User = ({ id }) => {
   };
 
   return (
-    <div className="flex w-full h-full">
+    <div className="flex md:flex-row flex-col w-full h-full">
       <div className="p-8 w-full">
         {product?.image && (
           <>
             <img
-              className="w-full h-64 rounded-md mb-4 object-cover"
+              className="w-full h-72  rounded-md mb-4 object-cover"
               src={product?.image}
               alt="Product Image"
             />
@@ -64,20 +66,49 @@ const User = ({ id }) => {
         <p className="my-6">{product?.description}</p>
       </div>
 
-      {/* checkout */}
-      <div className="co-span-1 border-l border-gray-300 bg-gray-100 p-4 w-128">
-        <h1 className="font-bold text-lg">Checkout</h1>
-        <p className="mt-2">Purchase this item to receive a download link.</p>
+      {/* Checkout - Mobile */}
+      <div className="p-8 md:hidden border-t border-gray-300 bg-gray-100 h-full">
+        <h1 className="font-bold text-xl">Checkout</h1>
+        <p className="mt-2">Purchase this item to receive it in your email.</p>
         <div className="flex items-center justify-between mt-2">
           <p className="font-bold">Total:</p>
           <p className="font-bold text-2xl">
-            {product?.price?.includes(".")
+            {(product?.price?.includes(".")
               ? "$" + product?.price
-              : "$" + product?.price + ".00"}
+              : "$" + product?.price + ".00") || "Free"}
+          </p>
+        </div>
+        <form onSubmit={(e) => purchase(e)} className="space-y-2 mt-4">
+          <input
+            type="email"
+            className="border p-1.5 border-gray-300 w-full rounded-md"
+            placeholder="email@example.com"
+            onChange={(event) => setEmail(event.target.value)}
+          />
+
+          <button
+            type="submit"
+            className="bg-black text-white rounded-md px-4 py-2 hover:bg-gray-900"
+          >
+            Purchase now
+          </button>
+        </form>
+      </div>
+
+      {/* checkout - Desktop */}
+      <div className="co-span-1 border-l border-gray-300 bg-gray-100 p-4 w-128 hidden md:block">
+        <h1 className="font-bold text-lg">Checkout</h1>
+        <p className="mt-2">Purchase this item to receive it in your email.</p>
+        <div className="flex items-center justify-between mt-2">
+          <p className="font-bold">Total:</p>
+          <p className="font-bold text-2xl">
+            {(product?.price?.includes(".")
+              ? "$" + product?.price
+              : "$" + product?.price + ".00") || "Free"}
           </p>
         </div>
         {/* Purchase (bottom) */}
-        <div className="mt-4">
+        <div className="mt-4 ">
           <form onSubmit={(e) => purchase(e)} className="space-y-2">
             <input
               type="email"

@@ -79,9 +79,10 @@ const Header = () => {
             className={
               "absolute top-14 right-4 rounded-md border border-gray-300 bg-white overflow-hidden"
             }
+            onClick={() => visible && setVisible(false)}
           >
             <button
-              onClick={() => router.replace("/dashboard")}
+              onClick={() => router.push("/dashboard")}
               className={
                 "text-left text-sm hover:bg-blue-700 hover:text-white w-full px-4 py-2"
               }

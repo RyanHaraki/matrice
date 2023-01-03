@@ -12,8 +12,10 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (localStorage.getItem("user")) {
       setUser(JSON.parse(localStorage.getItem("user")));
+    } else {
+      setUser(null);
     }
-  }, [router.pathname]);
+  }, [router.asPath]);
 
   return (
     <Wrapper>

@@ -10,6 +10,8 @@ import {
   ScaleIcon,
 } from "@heroicons/react/24/outline";
 
+const primaryColor = "#9074FF";
+
 const navigation = [
   //   { name: "Product", href: "#" },
   //   { name: "Features", href: "#" },
@@ -135,12 +137,8 @@ const Home = () => {
               <div className="flex h-9 items-center justify-between">
                 <div className="flex">
                   <a href="#" className="-m-1.5 p-1.5">
-                    <span className="sr-only">Your Company</span>
-                    <img
-                      className="h-8"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                      alt=""
-                    />
+                    <span className="sr-only">Matrice</span>
+                    <img className="h-8" src="./logo.svg" alt="Logo" />
                   </a>
                 </div>
                 <div className="flex">

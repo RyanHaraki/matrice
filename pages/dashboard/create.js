@@ -21,7 +21,7 @@ const Create = ({ id }) => {
       user = getUser(user.uid)
         .then((user) => {
           console.log(user);
-          const product = user.products.filter((p) => (p.id = id))[0];
+          const product = user.products.filter((p) => p.id == id)[0];
 
           setUser(user);
           setProduct(product);
@@ -34,7 +34,6 @@ const Create = ({ id }) => {
 
   const saveProduct = async (e) => {
     e.preventDefault();
-    console.log(product.image);
     let downloadUrl;
 
     // push image to storage
@@ -46,7 +45,7 @@ const Create = ({ id }) => {
     const uid = user.uid;
     updateUser(uid, {
       products: [
-        ...user.products,
+        ...user.products.filter((p) => p.id !== id),
         {
           ...product,
           image: downloadUrl !== undefined ? downloadUrl : product.image,
@@ -55,7 +54,7 @@ const Create = ({ id }) => {
     });
 
     // alert user of success
-    alert(`Product: ${id} succesfully updated `);
+    alert(`Product: ${product.name || id} succesfully updated `);
   };
 
   return (
@@ -116,19 +115,19 @@ const Create = ({ id }) => {
             <input
               type="file"
               defaultValue={product?.image}
-              onChange={(event) =>
-                setProduct({ ...product, image: event.target.files[0] })
-              }
+              onChange={(event) => {
+                setProduct({ ...product, image: event.target.files[0] });
+              }}
             />
           </div>
 
           {/* Form Group */}
-          <div className="flex flex-col w-full">
+          {/* <div className="flex flex-col w-full">
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
               Upload Product
             </label>
             <UploadWidget id="name" />
-          </div>
+          </div> */}
 
           {/* Form Group */}
           <div className="flex flex-col w-full">
@@ -148,6 +147,7 @@ const Create = ({ id }) => {
                 placeholder="5"
                 id="name"
                 type="number"
+                step="0.01"
               />
             </div>
           </div>
@@ -183,7 +183,11 @@ const Create = ({ id }) => {
           <>
             <img
               className="w-full h-64 rounded-md mb-4 object-cover"
-              src={product?.image}
+              src={
+                typeof product?.image == "object"
+                  ? URL.createObjectURL(product?.image)
+                  : product?.image
+              }
               alt="Product Image"
             />
             <hr className="my-4" />
