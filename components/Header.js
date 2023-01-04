@@ -60,7 +60,7 @@ const Header = ({ userData }) => {
     <div className="flex items-center justify-between p-4 border-b border-gray-300">
       <h1
         className={"font-bold text-lg cursor-pointer"}
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/dashboard")}
       >
         <img src="./logo.svg" alt="Logo" className="max-h-6" />
       </h1>
