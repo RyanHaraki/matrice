@@ -102,9 +102,10 @@ const User = ({ id }) => {
         <div className="flex items-center justify-between mt-2">
           <p className="font-bold">Total:</p>
           <p className="font-bold text-2xl">
-            {(product?.price?.includes(".")
+            {product?.price}
+            {/* {(product?.price?.includes(".")
               ? "$" + product?.price
-              : "$" + product?.price + ".00") || "Free"}
+              : "$" + product?.price + ".00") || "Free"} */}
           </p>
         </div>
         {/* Purchase (bottom) */}
