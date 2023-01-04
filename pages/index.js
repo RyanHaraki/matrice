@@ -23,7 +23,7 @@ const features = [
   {
     name: "Get Paid Instantly with Low Fees",
     description:
-      "Connect your bank account via Stripe and get paid the amount you desever the second somebody buys your product.",
+      "Connect your bank account via Stripe and get paid the amount you deserve the second somebody buys your product.",
     icon: BoltIcon,
   },
   {
