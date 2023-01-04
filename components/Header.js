@@ -35,17 +35,14 @@ function useOutsideAlerter() {
   return { visible, ref, setVisible };
 }
 
-const Header = () => {
+const Header = ({ userData }) => {
   const [user, setUser] = useState(null);
 
   const router = useRouter();
   const { ref, visible, setVisible } = useOutsideAlerter();
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      setUser(JSON.parse(user));
-    }
+    setUser(userData);
   }, []);
 
   const logUserOut = () => {

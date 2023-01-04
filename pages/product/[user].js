@@ -17,7 +17,7 @@ const User = ({ id }) => {
     let user = getUserByDisplayName(router.query.user.replace(".", " "))
       .then((user) => {
         console.log(user);
-        const product = user.products.filter((p) => p.id === productId)[0];
+        const product = user.products.filter((p) => p.id === productId);
         console.log(product);
         setProduct(product);
       })
@@ -43,7 +43,7 @@ const User = ({ id }) => {
       )
       .then((res) => {
         console.log("Email successfully sent!", res.status);
-        alert("Item succesfully purchased! Check your email for details.");
+        alert("Item successfully purchased! Check your email for details.");
       })
       .catch((err) => console.error("Email failed to send", err));
   };

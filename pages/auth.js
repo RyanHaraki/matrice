@@ -29,6 +29,22 @@ export default function Auth() {
   }, []);
 
   useEffect(() => {
+    if (!router.isReady) return;
+
+    let mode = router.query.mode;
+    console.log(router.query.mode);
+
+    if (mode == "signup") {
+      setLogin(false);
+    }
+    if (mode == "login") {
+      setLogin(true);
+    } else {
+      setLogin(false);
+    }
+  }, [router.isReady]);
+
+  useEffect(() => {
     if (errorMessage !== "") {
       alert(errorMessage);
     }

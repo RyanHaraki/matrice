@@ -54,7 +54,7 @@ const Create = ({ id }) => {
     });
 
     // alert user of success
-    alert(`Product: ${product.name || id} succesfully updated `);
+    alert(`Product: ${product.name || id} successfully updated `);
   };
 
   return (

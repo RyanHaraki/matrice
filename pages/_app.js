@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
       </Script>
       <Wrapper>
         <div className={"h-screen"}>
-          {user && <Header />}
+          {user && <Header userData={user} />}
           <Component {...pageProps} />
         </div>
       </Wrapper>

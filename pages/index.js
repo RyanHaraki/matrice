@@ -122,7 +122,7 @@ const Home = () => {
             </div>
             <div className="hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-end">
               <a
-                href="/auth"
+                href="/auth?mode=login"
                 className="inline-block rounded-lg px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-gray-900/10 hover:ring-gray-900/20"
               >
                 Log in
@@ -167,7 +167,7 @@ const Home = () => {
                   </div>
                   <div className="py-6">
                     <a
-                      href="/auth"
+                      href="/auth?mode=login"
                       className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-400/10"
                     >
                       Log in
@@ -206,7 +206,7 @@ const Home = () => {
                 </p>
                 <div className="mt-8 flex gap -x-4 sm:justify-center">
                   <a
-                    href="/auth"
+                    href="/auth?mode=signup"
                     className="inline-block rounded-lg bg-indigo-600 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-indigo-600 hover:bg-indigo-700 hover:ring-indigo-700"
                   >
                     Start Selling for free{" "}
@@ -309,7 +309,7 @@ const Home = () => {
           <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
             <div className="inline-flex rounded-md shadow">
               <a
-                href="/auth"
+                href="/auth?mode=signup"
                 className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-5 py-3 text-base font-medium text-white hover:bg-indigo-700"
               >
                 Get started
