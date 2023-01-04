@@ -35,7 +35,7 @@ const features = [
   {
     name: "Save Time with our No-Code Page Builder",
     description:
-      "Use our page builder and customizer to create a beautiful page for each of your products, and publish them to the web instantly..",
+      "Use our page builder and customizer to create a beautiful page for each of your products, and publish them to the web instantly.",
     icon: ScaleIcon,
   },
   {

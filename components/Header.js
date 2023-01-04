@@ -4,7 +4,6 @@ import { FaChevronDown } from "react-icons/all";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { auth } from "../utils/auth";
-import Logo from "../public/logo.svg";
 
 function useOutsideAlerter() {
   const [visible, setVisible] = useState(false);
@@ -63,7 +62,7 @@ const Header = ({ userData }) => {
         className={"font-bold text-lg cursor-pointer"}
         onClick={() => router.push("/")}
       >
-        <img src={Logo} alt="Logo" className="max-h-6" />
+        <img src="./logo.svg" alt="Logo" className="max-h-6" />
       </h1>
       <div ref={ref}>
         <button

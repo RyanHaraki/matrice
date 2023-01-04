@@ -110,7 +110,7 @@ const Create = ({ id }) => {
           {/* Form Group */}
           <div className="flex flex-col w-full">
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
-              Product Image
+              Product Image (wide)
             </label>
             <input
               type="file"
@@ -130,7 +130,7 @@ const Create = ({ id }) => {
           </div> */}
 
           {/* Form Group */}
-          <div className="flex flex-col w-full">
+          {/* <div className="flex flex-col w-full">
             <label className="text-gray-400 text-sm mb-0.5" htmlFor="name">
               Price
             </label>
@@ -150,7 +150,7 @@ const Create = ({ id }) => {
                 step="0.01"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Form Group */}
 
@@ -178,23 +178,28 @@ const Create = ({ id }) => {
 
       {/* Product Page Template */}
 
-      <div className="col-span-3 px-4 py-8">
-        {product?.image && (
-          <>
-            <img
-              className="w-full h-64 rounded-md mb-4 object-cover"
-              src={
-                typeof product?.image == "object"
-                  ? URL.createObjectURL(product?.image)
-                  : product?.image
-              }
-              alt="Product Image"
-            />
-            <hr className="my-4" />
-          </>
-        )}
-        <h1 className="text-3xl font-bold mb-8">{product?.name}</h1>
-        <p className="my-6">{product?.description}</p>
+      <div className="col-span-3">
+        <div className="w-full py-2 px-4 border-b border-gray-300">
+          Preview Mode
+        </div>
+        <div className="px-4 py-8">
+          {product?.image && (
+            <>
+              <img
+                className="w-full h-64 rounded-md mb-4 object-cover"
+                src={
+                  typeof product?.image == "object"
+                    ? URL.createObjectURL(product?.image)
+                    : product?.image
+                }
+                alt="Product Image"
+              />
+              <hr className="my-4" />
+            </>
+          )}
+          <h1 className="text-3xl font-bold mb-8">{product?.name}</h1>
+          <p className="my-6">{product?.description}</p>
+        </div>
       </div>
 
       <div className="co-span-1 border-l border-gray-300 bg-gray-100 p-4">
@@ -203,11 +208,12 @@ const Create = ({ id }) => {
         <div className="flex items-center justify-between mt-2">
           <p className="font-bold">Total:</p>
           <p className="font-bold text-2xl">
-            {product?.price && product?.price !== "0"
+            Free
+            {/* {product?.price && product?.price !== "0"
               ? product?.price.includes(".")
                 ? "$" + product?.price
                 : "$" + product?.price + ".00"
-              : "Free"}
+              : "Free"} */}
           </p>
         </div>
         {/* Purchase (bottom) */}
