@@ -17,7 +17,7 @@ const User = ({ id }) => {
     let user = getUserByDisplayName(router.query.user.replace(".", " "))
       .then((user) => {
         console.log(user);
-        const product = user.products.filter((p) => p.id === productId);
+        const product = user.products.filter((p) => p.id === productId)[0];
         console.log(product);
         setProduct(product);
       })
