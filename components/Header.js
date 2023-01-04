@@ -4,6 +4,7 @@ import { FaChevronDown } from "react-icons/all";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { auth } from "../utils/auth";
+import Logo from "../public/logo.svg";
 
 function useOutsideAlerter() {
   const [visible, setVisible] = useState(false);
@@ -65,7 +66,7 @@ const Header = () => {
         className={"font-bold text-lg cursor-pointer"}
         onClick={() => router.push("/")}
       >
-        <img src="./logo.svg" alt="Logo" className="max-h-6" />
+        <img src={Logo} alt="Logo" className="max-h-6" />
       </h1>
       <div ref={ref}>
         <button
@@ -90,11 +91,7 @@ const Header = () => {
               Dashboard
             </button>
             <button
-              onClick={() =>
-                router.replace(
-                  "mailto:ryanharaki1@gmail.com?subject=Matrice Feature Request"
-                )
-              }
+              onClick={() => router.replace("https://tally.so/r/mZ9W6V")}
               className={
                 "text-left text-sm hover:bg-blue-700 hover:text-white w-full px-4 py-2"
               }

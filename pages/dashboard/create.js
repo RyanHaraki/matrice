@@ -102,7 +102,7 @@ const Create = ({ id }) => {
               }
               value={product?.description}
               className="border p-1.5 border-gray-300 w-full h-28 rounded-md"
-              placeholder="My product does amazing things and will make your life easier"
+              placeholder="Product Description"
               id="name"
             />
           </div>

@@ -9,7 +9,7 @@ import {
 import { app } from "../utils/firebase";
 import { useRouter } from "next/router";
 import { FaGoogle } from "react-icons/fa";
-import { createNewUser } from "../utils/db";
+import { createNewUser, getUser, getUserByDisplayName } from "../utils/db";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -37,17 +37,30 @@ export default function Auth() {
   // create user with Google oauth
   const loginWithGoogle = async () => {
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(async (result) => {
+        let userCheck;
         const user = result.user;
-        // If the user is a new user, add them to the database
-        if (user.metadata.createdAt == result.user.metadata.lastLoginAt) {
-          // Add user to DB and set them in localstorage
-          localStorage.setItem("user", JSON.stringify(user));
-          createNewUser(user.uid, user.displayName, user.email, 1);
-        } else {
-          // If the user is not new, just set them in localstorage
+
+        // check if user exists in database
+        await getUser(user.uid).then((res) => {
+          if (res) {
+            userCheck = res.email;
+            console.log(res);
+          } else {
+            userCheck = null;
+          }
+        });
+
+        // exists in database;
+        if (user.email == userCheck) {
+          console.log("user exists", userCheck);
           const user = result.user;
           localStorage.setItem("user", JSON.stringify(user));
+        } else {
+          // does not exist in database
+          console.log("new user", userCheck, user.email);
+          localStorage.setItem("user", JSON.stringify(user));
+          createNewUser(user.uid, user.displayName, user.email, 1);
         }
 
         // Push user to the dashboard

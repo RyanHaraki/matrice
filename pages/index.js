@@ -27,9 +27,9 @@ const features = [
     icon: BoltIcon,
   },
   {
-    name: "Share your Products Anywhere",
+    name: "Share your Products on any Platform",
     description:
-      "Showcase your product using a beautiful and customizable that can be shared on any platform.",
+      "Showcase your product in your bio using a beautiful and customizable landing page that can be shared on any platform.",
     icon: DevicePhoneMobileIcon,
   },
   {
