@@ -10,6 +10,7 @@ import { app } from "../utils/firebase";
 import { useRouter } from "next/router";
 import { FaGoogle } from "react-icons/fa";
 import { createNewUser, getUser, getUserByDisplayName } from "../utils/db";
+import { deleteDoc, doc } from "firebase/firestore";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -60,7 +61,7 @@ export default function Auth() {
         // check if user exists in database
         await getUser(user.uid).then((res) => {
           if (res) {
-            userCheck = res.email;
+            userCheck = res;
             console.log(res);
           } else {
             userCheck = null;
@@ -68,7 +69,10 @@ export default function Auth() {
         });
 
         // exists in database;
-        if (user.email == userCheck) {
+        if (
+          user.email == userCheck.email ||
+          user.displayName == userCheck.displayName
+        ) {
           console.log("user exists", userCheck);
           const user = result.user;
           localStorage.setItem("user", JSON.stringify(user));
@@ -130,19 +134,35 @@ export default function Auth() {
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user;
-        // save the users session in localstorage
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            uid: user.uid,
-            displayName: user.name,
-            email: user.email,
+        user.displayName = name;
+        // check if a user with the same username already exists
+        await getUserByDisplayName(user.displayName)
+          .then((userCheck) => {
+            if (userCheck) {
+              alert("This username is already taken. Please try again.");
+              const userRef = doc(db, "users", user.uid);
+              deleteDoc(userRef)
+                .then(() => console.log("deleted" + user.uid))
+                .catch((err) => console.error(err));
+            } else {
+              // IF user does not exist, create a new user
+              console.log("user does not exist");
+              localStorage.setItem(
+                "user",
+                JSON.stringify({
+                  uid: user.uid,
+                  displayName: user.name,
+                  email: user.email,
+                })
+              );
+              createNewUser(user.uid, name, email, 1);
+
+              // add the user to the database
+              // push to the dashboard
+              router.push("/dashboard");
+            }
           })
-        );
-        // add the user to the database
-        createNewUser(user.uid, name, email, 1);
-        // push to the dashboard
-        router.push("/dashboard");
+          .catch((err) => console.error(err));
       })
       .catch((error) => {
         const { code, message } = error;
