@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaMagento } from "react-icons/fa";
+import { FaChevronLeft, FaLink } from "react-icons/fa";
 import { useRouter } from "next/router";
 import UploadWidget from "../../components/UploadWidget";
 import { getUser, updateUser } from "../../utils/db";
-import { deleteFile, getFile, saveFile } from "../../utils/storage";
+import { saveFile } from "../../utils/storage";
 
 const Create = ({ id }) => {
   const [user, setUser] = useState(null);
@@ -11,9 +11,6 @@ const Create = ({ id }) => {
 
   const router = useRouter();
 
-  // TODO: fix bug with this useEffect -> ID is correct but the product info is pulled from another product
-  // RECREATE: create a new product in dashboard -> multiple products are created with the same ID with differnet info (look at console.log)
-  // changes other product IDs to the new product ID... makes no sense
   useEffect(() => {
     // retrieve product information from database
     let user = JSON.parse(localStorage.getItem("user"));
@@ -179,8 +176,22 @@ const Create = ({ id }) => {
       {/* Product Page Template */}
 
       <div className="col-span-3">
-        <div className="w-full py-2 px-4 border-b border-gray-300">
-          Preview Mode
+        <div className="w-full py-2 px-4 border-b border-gray-300 flex justify-between items-center">
+          <p>Preview Mode</p>
+          <button
+            className="p-1 border-2 border-blue-400 hover:bg-blue-50 rounded-md text-sm text-blue-400 flex items-center"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `https://usematrice.co/product/${user.displayName.replace(
+                  " ",
+                  "."
+                )}?id=${id}`
+              );
+            }}
+          >
+            Copy Link
+            <FaLink className="ml-1" />
+          </button>
         </div>
         <div className="px-4 py-8">
           {product?.image && (

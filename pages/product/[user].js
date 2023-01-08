@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getUserByDisplayName } from "../../utils/db";
+import { getUserByDisplayName, updateUser } from "../../utils/db";
 import { useRouter } from "next/router";
+import { arrayUnion, serverTimestamp } from "firebase/firestore";
 import emailjs from "emailjs-com";
 
 const User = ({ id }) => {
+  const [creator, setCreator] = useState(null);
   const [product, setProduct] = useState(null);
   const [email, setEmail] = useState("");
 
@@ -17,6 +19,7 @@ const User = ({ id }) => {
     let user = getUserByDisplayName(router.query.user.replace(".", " "))
       .then((user) => {
         console.log(user);
+        setCreator(user);
         const product = user.products.filter((p) => p.id === productId)[0];
         console.log(product);
         setProduct(product);
@@ -24,7 +27,41 @@ const User = ({ id }) => {
       .catch((err) => console.error(err));
   }, [router.isReady]);
 
-  const purchase = (e) => {
+  const addBuyer = async () => {
+    console.log("adding buyer", creator);
+    // new transaction data
+    const paymentInfo = {
+      email: email,
+      timestamp: Date.now(),
+      price: product.price,
+    };
+
+    // update the product with new buyer info
+    const updatedProduct = {
+      ...product,
+      buyers: [...product.buyers, paymentInfo],
+    };
+
+    // get the index of the updated product
+    const index = creator.products.findIndex((p) => p.id === product.id);
+
+    // update the creator's product array with new product (this ensures product is not moved to end of array upon purchase)
+    setCreator({
+      ...creator,
+      products: [
+        ...creator.products.slice(0, index),
+        updatedProduct,
+        ...creator.products.slice(index + 1),
+      ],
+    });
+
+    // update user in db
+    await updateUser(creator.uid, {
+      products: [...creator.products],
+    });
+  };
+
+  const purchase = async (e) => {
     e.preventDefault();
     const templateParams = {
       to_email: email,
@@ -34,18 +71,25 @@ const User = ({ id }) => {
       product_url: product.url || "No URL provided",
     };
 
-    emailjs
-      .send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_TEMPLATE,
-        templateParams,
-        process.env.NEXT_PUBLIC_EMAILJS_KEY
-      )
-      .then((res) => {
-        console.log("Email successfully sent!", res.status);
-        alert("Item successfully purchased! Check your email for details.");
-      })
-      .catch((err) => console.error("Email failed to send", err));
+    // check if user has already purchased this item
+    if (creator.products.filter((e) => e.email === email)) {
+      alert("You have already purchased this item!");
+    } else {
+      console.log("adding buyer", email);
+
+      emailjs
+        .send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_TEMPLATE,
+          templateParams,
+          process.env.NEXT_PUBLIC_EMAILJS_KEY
+        )
+        .then((res) => {
+          console.log("Email successfully sent!", res.status);
+          alert("Item successfully purchased! Check your email for details.");
+        })
+        .catch((err) => console.error("Email failed to send", err));
+    }
   };
 
   return (
@@ -73,9 +117,10 @@ const User = ({ id }) => {
         <div className="flex items-center justify-between mt-2">
           <p className="font-bold">Total:</p>
           <p className="font-bold text-2xl">
-            {(product?.price?.includes(".")
+            {product?.price}
+            {/* {(product?.price?.includes(".")
               ? "$" + product?.price
-              : "$" + product?.price + ".00") || "Free"}
+              : "$" + product?.price + ".00") || "Free"} */}
           </p>
         </div>
         <form onSubmit={(e) => purchase(e)} className="space-y-2 mt-4">
