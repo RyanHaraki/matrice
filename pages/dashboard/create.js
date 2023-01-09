@@ -17,7 +17,6 @@ const Create = ({ id }) => {
     if (user) {
       user = getUser(user.uid)
         .then((user) => {
-          console.log(user);
           const product = user.products.filter((p) => p.id == id)[0];
 
           setUser(user);

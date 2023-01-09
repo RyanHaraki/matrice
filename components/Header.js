@@ -4,6 +4,8 @@ import { FaChevronDown } from "react-icons/all";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { auth } from "../utils/auth";
+import Image from "next/image";
+import Logo from "../public/logo.svg";
 
 function useOutsideAlerter() {
   const [visible, setVisible] = useState(false);
@@ -58,12 +60,13 @@ const Header = ({ userData }) => {
 
   return (
     <div className="flex items-center justify-between p-4 border-b border-gray-300">
-      <h1
-        className={"font-bold text-lg cursor-pointer"}
+      <Image
+        src={Logo}
+        alt="Logo"
+        className="w-10 h-10 cursor-pointer"
         onClick={() => router.push("/dashboard")}
-      >
-        <img src="./logo.svg" alt="Logo" className="max-h-6" />
-      </h1>
+      />
+
       <div ref={ref}>
         <button
           onClick={() => setVisible(!visible)}
