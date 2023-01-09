@@ -34,7 +34,7 @@ const Create = ({ id }) => {
     let downloadUrl;
 
     // push image to storage
-    if (product.image) {
+    if (typeof product.image == "object") {
       downloadUrl = await saveFile("images/", product.image);
     }
 

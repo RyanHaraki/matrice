@@ -34,9 +34,9 @@ export default function handler(req, res) {
     <p>Product Price: ${product_price}</p>
     <p>Product URL: ${
       product_url
-        ? ` <a href=${product_url}>${product_url}</a></p>`
-        : `<p>No URL provided</p>`
-    }
+        ? ` <a href=${product_url}>${product_url}</a>`
+        : `No URL provided`
+    }</p>
     <hr />
     <p>Thank you for using Matrice!</p>
     </div>`,

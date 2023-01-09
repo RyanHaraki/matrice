@@ -63,7 +63,6 @@ const User = ({ id }) => {
   };
 
   const sendEmails = async () => {
-    console.log("Sending email");
     const data = {
       to_email: email, // buyer's email
       from_email: creator.email, // creator's email
@@ -78,7 +77,6 @@ const User = ({ id }) => {
       body: JSON.stringify(data),
     })
       .then((response) => {
-        console.log("response received");
         if (response.status == 200) {
           console.log("Email sent!");
         } else {
