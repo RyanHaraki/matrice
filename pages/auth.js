@@ -62,26 +62,22 @@ export default function Auth() {
         await getUser(user.uid).then((res) => {
           if (res) {
             userCheck = res;
-            console.log(res);
+            // exists in database;
+            if (
+              user.email == userCheck.email ||
+              user.displayName == userCheck.displayName
+            ) {
+              console.log("user exists", userCheck);
+              localStorage.setItem("user", JSON.stringify(user));
+            }
           } else {
+            // does not exist in database
             userCheck = null;
+            console.log("new user", userCheck, user.email);
+            localStorage.setItem("user", JSON.stringify(user));
+            createNewUser(user.uid, user.displayName, user.email, 1);
           }
         });
-
-        // exists in database;
-        if (
-          user.email == userCheck.email ||
-          user.displayName == userCheck.displayName
-        ) {
-          console.log("user exists", userCheck);
-          const user = result.user;
-          localStorage.setItem("user", JSON.stringify(user));
-        } else {
-          // does not exist in database
-          console.log("new user", userCheck, user.email);
-          localStorage.setItem("user", JSON.stringify(user));
-          createNewUser(user.uid, user.displayName, user.email, 1);
-        }
 
         // Push user to the dashboard
         router.push("/dashboard");
@@ -91,7 +87,7 @@ export default function Auth() {
           console.log("Email already in use with different sign-in method.");
         }
 
-        console.error(error);
+        console.error("error: ", error);
       });
   };
 
