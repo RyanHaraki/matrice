@@ -24,6 +24,7 @@ const DashboardPage = ({ userData }) => {
       price: "Free",
       url: product.url || "",
       image: product.image || "",
+      buyers: product.buyers || [],
       file: "",
     };
 
@@ -45,6 +46,7 @@ const DashboardPage = ({ userData }) => {
       price: "Free",
       url: "",
       image: "",
+      buyers: [],
       file: "",
     };
 
@@ -68,7 +70,7 @@ const DashboardPage = ({ userData }) => {
             href={`/dashboard/create?id=${product.id}`}
             className="w-full felx"
           >
-            <button className="flex items-center justify-between w-1/2  hover:bg-gray-50 rounded-md cursor-pointer">
+            <button className="flex items-center justify-between w-3/4  hover:bg-gray-50 rounded-md cursor-pointer">
               <div className="flex items-center">
                 <FaBriefcase className="mr-2" />
                 {product.name || "Unnamed Product"}

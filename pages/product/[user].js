@@ -18,17 +18,15 @@ const User = ({ id }) => {
     // retrieve product information from database
     let user = getUserByDisplayName(router.query.user.replace(".", " "))
       .then((user) => {
-        console.log(user);
         setCreator(user);
         const product = user.products.filter((p) => p.id === productId)[0];
-        console.log(product);
+
         setProduct(product);
       })
       .catch((err) => console.error(err));
   }, [router.isReady]);
 
   const addBuyer = async () => {
-    console.log("adding buyer", creator);
     // new transaction data
     const paymentInfo = {
       email: email,
@@ -46,49 +44,68 @@ const User = ({ id }) => {
     const index = creator.products.findIndex((p) => p.id === product.id);
 
     // update the creator's product array with new product (this ensures product is not moved to end of array upon purchase)
+    const updatedProducts = [
+      ...creator.products.slice(0, index),
+      updatedProduct,
+      ...creator.products.slice(index + 1),
+    ];
+
+    // update the creator in state
     setCreator({
       ...creator,
-      products: [
-        ...creator.products.slice(0, index),
-        updatedProduct,
-        ...creator.products.slice(index + 1),
-      ],
+      products: updatedProducts,
     });
 
     // update user in db
     await updateUser(creator.uid, {
-      products: [...creator.products],
+      products: updatedProducts,
     });
   };
 
-  const purchase = async (e) => {
-    e.preventDefault();
-    const templateParams = {
-      to_email: email,
+  const sendEmails = async () => {
+    console.log("Sending email");
+    const data = {
+      to_email: email, // buyer's email
+      from_email: creator.email, // creator's email
       product_name: product.name,
       product_description: product.description,
       product_price: product.price || "Free",
       product_url: product.url || "No URL provided",
     };
 
+    await fetch("/api/purchase", {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        console.log("response received");
+        if (response.status == 200) {
+          console.log("Email sent!");
+        } else {
+          console.log("something went wrong sending the email");
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const purchase = async (e) => {
+    e.preventDefault();
+
+    if (email === "") return;
+
     // check if user has already purchased this item
-    if (creator.products.filter((e) => e.email === email)) {
+    if (
+      creator.products
+        .filter((e) => e.id === product.id)[0]
+        .buyers.some((e) => e.email === email)
+    ) {
+      // if so, alert user
       alert("You have already purchased this item!");
     } else {
-      console.log("adding buyer", email);
-
-      emailjs
-        .send(
-          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_TEMPLATE,
-          templateParams,
-          process.env.NEXT_PUBLIC_EMAILJS_KEY
-        )
-        .then((res) => {
-          console.log("Email successfully sent!", res.status);
-          alert("Item successfully purchased! Check your email for details.");
-        })
-        .catch((err) => console.error("Email failed to send", err));
+      // if not, add buyer to product and send email
+      await addBuyer();
+      await sendEmails();
+      alert("Purchase successful!");
     }
   };
 
@@ -127,7 +144,7 @@ const User = ({ id }) => {
           <input
             type="email"
             className="border p-1.5 border-gray-300 w-full rounded-md"
-            placeholder="email@example.com"
+            placeholder="Email"
             onChange={(event) => setEmail(event.target.value)}
           />
 
@@ -159,7 +176,7 @@ const User = ({ id }) => {
             <input
               type="email"
               className="border p-1.5 border-gray-300 w-full rounded-md"
-              placeholder="email@example.com"
+              placeholder="Your Email"
               onChange={(event) => setEmail(event.target.value)}
             />
 

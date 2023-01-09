@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { getUser, updateUser, deleteProduct } from "../../utils/db";
-import { arrayUnion } from "firebase/firestore";
+import { getUser } from "../../utils/db";
 import DashboardNavbar from "../../components/Dashboard/DashboardNavbar";
 import DashboardPage from "../../components/Dashboard/DashboardPage";
 
