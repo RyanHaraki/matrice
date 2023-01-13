@@ -1,9 +1,10 @@
 import React from "react";
-import { FaPlus, FaBriefcase, FaTrash, FaLink } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { updateUser, deleteProduct } from "../../utils/db";
 import { arrayUnion } from "firebase/firestore";
+import Product from "./Product";
 
 const DashboardPage = ({ userData }) => {
   const [user, setUser] = useState(userData);
@@ -62,39 +63,11 @@ const DashboardPage = ({ userData }) => {
       <h1 className="text-3xl font-bold mb-12">Your Products</h1>
       {/* Map over all products */}
       {user?.products.map((product) => (
-        <div
-          key={product.id}
-          className="flex items-center justify-between w-1/2  hover:bg-gray-50 rounded-md cursor-pointer p-2"
-        >
-          <a
-            href={`/dashboard/create?id=${product.id}`}
-            className="w-full felx"
-          >
-            <button className="flex items-center justify-between w-3/4  hover:bg-gray-50 rounded-md cursor-pointer">
-              <div className="flex items-center">
-                <FaBriefcase className="mr-2" />
-                {product.name || "Unnamed Product"}
-              </div>
-            </button>
-          </a>
-          <div className="flex space-x-2">
-            <FaLink
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `https://usematrice.co/product/${user.displayName.replace(
-                    " ",
-                    "."
-                  )}?id=${product.id}`
-                );
-              }}
-              className="rounded-md hover:bg-gray-200 h-full p-0.5"
-            />
-            <FaTrash
-              onClick={() => removeProduct(product.id)}
-              className="rounded-md hover:bg-gray-200 h-full p-0.5"
-            />
-          </div>
-        </div>
+        <Product
+          product={product}
+          user={userData}
+          removeProduct={removeProduct}
+        />
       ))}
       <p onClick={addProduct}>
         <button className="flex items-center w-1/2 text-gray-400 hover:bg-gray-50 rounded-md cursor-pointer p-2">

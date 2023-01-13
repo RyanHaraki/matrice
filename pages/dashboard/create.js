@@ -4,10 +4,12 @@ import { useRouter } from "next/router";
 import UploadWidget from "../../components/UploadWidget";
 import { getUser, updateUser } from "../../utils/db";
 import { saveFile } from "../../utils/storage";
+import Modal from "../../components/UI/Modal";
 
 const Create = ({ id }) => {
   const [user, setUser] = useState(null);
   const [product, setProduct] = useState(null);
+  const [modal, setModal] = useState(false);
 
   const router = useRouter();
 
@@ -49,12 +51,19 @@ const Create = ({ id }) => {
       ],
     });
 
-    // alert user of success
-    alert(`Product: ${product.name || id} successfully updated `);
+    setModal(true);
   };
 
   return (
     <div className="grid grid-cols-5 gap-4 h-screen">
+      <Modal
+        open={modal}
+        setOpen={setModal}
+        head="Product Updated"
+        message={`Product successfully updated!`}
+        action={() => setModal(false)}
+        type={"confirm"}
+      />
       <div className="border-r border-gray-300 p-4 flex flex-col items-start">
         <div className="flex items-center w-full mb-12">
           <div

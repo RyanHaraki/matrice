@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { getUserByDisplayName, updateUser } from "../../utils/db";
 import { useRouter } from "next/router";
-import { arrayUnion, serverTimestamp } from "firebase/firestore";
-import emailjs from "emailjs-com";
+import Modal from "../../components/UI/Modal";
 
 const User = ({ id }) => {
   const [creator, setCreator] = useState(null);
   const [product, setProduct] = useState(null);
   const [email, setEmail] = useState("");
+  const [modal, setModal] = useState(false);
+  const [message, setMessage] = useState("");
 
   const router = useRouter();
 
@@ -98,17 +99,29 @@ const User = ({ id }) => {
         .buyers.some((e) => e.email === email)
     ) {
       // if so, alert user
-      alert("You have already purchased this item!");
+      setMessage(
+        "You have already purchased this item! Please check your email for the receipt."
+      );
+      setModal(true);
     } else {
       // if not, add buyer to product and send email
       await addBuyer();
       await sendEmails();
-      alert("Purchase successful!");
+      setMessage("Purchase successful!");
+      setModal(true);
     }
   };
 
   return (
     <div className="flex md:flex-row flex-col w-full h-full">
+      <Modal
+        open={modal}
+        setOpen={setModal}
+        head={message == "Purchase successful!" ? "Success!" : "Error!"}
+        message={message}
+        action={() => setModal(false)}
+        type={"confirm"}
+      />
       <div className="p-8 w-full">
         {product?.image && (
           <>

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { getUser } from "../../utils/db";
 import DashboardNavbar from "../../components/Dashboard/DashboardNavbar";
 import DashboardPage from "../../components/Dashboard/DashboardPage";
+import Modal from "../../components/UI/Modal";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
